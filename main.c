@@ -79,11 +79,12 @@ void init(char *path){
 	fseek (f , 0 , SEEK_END);
 	long fsize = ftell(f);
 	rewind(f);
-	char *buf = malloc(sizeof(char) * fsize);
-	size_t result = fread(buf,fsize,1,f);
+	char *buf = malloc(sizeof(char) * fsize +1);
+	size_t result = fread(buf,1,fsize,f);
 	//load into memory
 	for(int i =0;i<result;i++){
 		memory[i + 512] = buf[i];
+		printf("%x\n",memory[i+512]);
 	}
 	fclose(f);
 
@@ -92,9 +93,8 @@ void emulate(){
 	opcode = memory[pc] << 8 | memory[pc+1];
 	//decode
 	switch(opcode & 0xF000){
-		
-
-
+		case 0x00E0:
+				memset(gfx,0,sizeof(gfx));
 	}
 
 }
@@ -113,15 +113,7 @@ int main(int argc,char ** argv){
         380,                               // height, in pixels
         SDL_WINDOW_OPENGL                  // flags - see below
     );
-	for(;;){
-		if(SDL_PollEvent(&event)){
-			continue;
-
-		}
-
-
-
-	}	
+		init(argv[1]);
 
 
 
