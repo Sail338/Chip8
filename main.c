@@ -94,8 +94,60 @@ void emulate(){
 	//decode
 	switch(opcode & 0xF000){
 		case 0x00E0:
+
 				memset(gfx,0,sizeof(gfx));
+				break;
+		case 0x2000:
+				stack[sp] = pc;
+				++sp;
+				pc = opcode & 0x0FFF;
+				break;
+		case 0x1:
+				pc = opcode & 0x0FFF;
+				break;
+		case 0x3:
+				//skips if rX = NN
+				if((registers[opcode & 0x0F00]) == (opcode &0x00FF) ){
+					pc +=4;	
+
+				} else{
+
+					pc +=2;	
+				}
+				break;
+		case 0x40:
+				if((registers[opcode & 0x0F00]) != (opcode &0x00FF) ){
+					pc +=4;	
+
+				} else{
+
+					pc +=2;	
+				}
+				break;
+		case 0x5:
+				if( registers[(opcode & 0x0F00)] == registers[(opcode & 0x00F0)]){
+					pc +=4;	
+
+				} 
+				else{
+					pc +=2;
+				}
+				break;
+	     case 0x6:
+				//sets rX = NN
+				registers[opcode & 0x0F00] = opcode & 0x00FF;
+				break;
+		 case 0x7:
+				registers[opcode & 0x0F00] += opcode & 0x00FF;
+				break;
+		 case 0x8:
+				//now for some cancer
+				
+
+
+
 	}
+
 
 }
 int main(int argc,char ** argv){
