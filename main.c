@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <SDL/SDL.h>
-
+#include <SDL2/SDL.h>
+#undef main
 //current opcode
 unsigned short opcode;
+unsigned short ip;
 //our memory array
 char memory[4096];
 
@@ -42,8 +43,8 @@ unsigned char key[16] ={
 	};
 
 //i have no clue what this is but its our font set
-unsigned char fontset[80] =
-{ 
+unsigned char fontset[80] ={
+ 
   0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
   0x20, 0x60, 0x20, 0x20, 0x70, // 1
   0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -61,9 +62,72 @@ unsigned char fontset[80] =
   0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
   0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
-int main(){
+void init(char *path){
+	pc = 0x200;
+	sp = 0;
+	memset(memory,0,4096);
+	delay_timer = 0;
+	sound_timer = 0;
+	memset(registers,0,16*4);
+	for(int i = 0;i<80;i++){
+		memory[i] = fontset[i];
+
+	}
+	//opem the file and start placing it into to memory
+	FILE* f = fopen(path,"rb");
+	//find the size of the file
+	fseek (f , 0 , SEEK_END);
+	long fsize = ftell(f);
+	rewind(f);
+	char *buf = malloc(sizeof(char) * fsize);
+	size_t result = fread(buf,fsize,1,f);
+	//load into memory
+	for(int i =0;i<result;i++){
+		memory[i + 512] = buf[i];
+	}
+	fclose(f);
+
+}
+void emulate(){
+	opcode = memory[pc] << 8 | memory[pc+1];
+	//decode
+	switch(opcode & 0xF000){
+		
+
+
+	}
+
+}
+int main(int argc,char ** argv){
 	//setup SDL for grpahocs
-	SDL_Init(SDL_INIT_EVERYTHING);
+    Uint8 * key;
+	SDL_Window *window;
+    SDL_Event event;
+	//initalize the window
+    SDL_Init(SDL_INIT_EVERYTHING);
+	    window = SDL_CreateWindow(
+        "An SDL2 window",                  // window title
+        SDL_WINDOWPOS_UNDEFINED,           // initial x position
+        SDL_WINDOWPOS_UNDEFINED,           // initial y position
+        640,                               // width, in pixels
+        380,                               // height, in pixels
+        SDL_WINDOW_OPENGL                  // flags - see below
+    );
+	for(;;){
+		if(SDL_PollEvent(&event)){
+			continue;
+
+		}
+
+
+
+	}	
+
+
+
+
+
+
 
 	return 0;
 
