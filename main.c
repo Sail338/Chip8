@@ -107,7 +107,7 @@ void emulate(){
 				break;
 		case 0x3:
 				//skips if rX = NN
-				if((registers[opcode & 0x0F00]) == (opcode &0x00FF) ){
+				if((registers[(opcode & 0x0F00) >> 8]) == (opcode &0x00FF) ){
 					pc +=4;	
 
 				} else{
@@ -116,7 +116,7 @@ void emulate(){
 				}
 				break;
 		case 0x40:
-				if((registers[opcode & 0x0F00]) != (opcode &0x00FF) ){
+				if((registers[(opcode & 0x0F00) >> 8]) != (opcode &0x00FF) ){
 					pc +=4;	
 
 				} else{
@@ -125,7 +125,7 @@ void emulate(){
 				}
 				break;
 		case 0x5:
-				if( registers[(opcode & 0x0F00)] == registers[(opcode & 0x00F0)]){
+				if( registers[(opcode & 0x0F00) >> 8] == registers[(opcode & 0x00F0) >> 4]){
 					pc +=4;	
 
 				} 
@@ -135,12 +135,28 @@ void emulate(){
 				break;
 	     case 0x6:
 				//sets rX = NN
-				registers[opcode & 0x0F00] = opcode & 0x00FF;
+				registers[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
+				pc+=2;
 				break;
 		 case 0x7:
-				registers[opcode & 0x0F00] += opcode & 0x00FF;
+				registers[(opcode & 0x0F00) >> 8] += opcode & 0x00FF;
+				pc += 2;
 				break;
 		 case 0x8:
+				switch(opcode & 0x000F){
+					case 0x0000:
+						registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x00F0) >> 4];
+						pc +=2;
+					case 0x0001:
+						registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x0F00) >> 8]  | registers[(opcode & 0x00F0) >> 4];
+
+					case 0x0002:
+						registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x0F00) >> 8]  & registers[(opcode & 0x00F0) >> 4];
+
+					
+					case 0x0003:
+						registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x0F00) >> 8]  ^ registers[(opcode & 0x00F0) >> 4];
+				}
 				//now for some cancer
 				
 
