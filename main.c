@@ -147,15 +147,32 @@ void emulate(){
 					case 0x0000:
 						registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x00F0) >> 4];
 						pc +=2;
+						break;
 					case 0x0001:
 						registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x0F00) >> 8]  | registers[(opcode & 0x00F0) >> 4];
-
+						pc +=2;
+						break;
 					case 0x0002:
 						registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x0F00) >> 8]  & registers[(opcode & 0x00F0) >> 4];
-
+						pc +=2;
+						break;
 					
 					case 0x0003:
 						registers[(opcode & 0x0F00) >> 8] = registers[(opcode & 0x0F00) >> 8]  ^ registers[(opcode & 0x00F0) >> 4];
+						pc +=2;
+						break;
+					case 0x0004:
+						if(((int)registers[(opcode & 0x0F00) >> 8] + (int)registers[(opcode & 0x00F00) >> 4]) < 256){
+							registers[15] &= 0;
+
+						} else{
+
+							registers[15] =1;
+						}
+						registers[(opcode & 0x0F00) >> 8] +=registers[(opcode & 0x00F0) >> 4];
+                        pc += 2;
+						break;
+
 				}
 				//now for some cancer
 				
@@ -183,7 +200,10 @@ int main(int argc,char ** argv){
     );
 		init(argv[1]);
 
+	for(;;){
+		emulate();
 
+	}
 
 
 
