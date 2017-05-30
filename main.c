@@ -19,7 +19,7 @@ unsigned char sound_timer;
 //some stack stuff
 unsigned short stack[16];
 unsigned short sp;
-
+unsigned short I;
 
 //emulate4s a keypad
 unsigned char key[16] ={
@@ -90,6 +90,8 @@ void init(char *path){
 
 }
 void emulate(){
+	int vx,vy,y,x,times,i;
+	unsigned height,pixel;
 	opcode = memory[pc] << 8 | memory[pc+1];
 	//decode
 	switch(opcode & 0xF000){
@@ -206,7 +208,44 @@ void emulate(){
 
 				}
 				break;
+				case 0x9000:
+					if(registers[(opcode & 0x0F00) >> 8] != registers[(opcode & 0x00F0) >> 4]){
+						pc +=4;
 
+					}	else {
+						pc +=2;
+
+					}
+					break;
+				case 0xA000:
+					 I = opcode & 0x0FFF;
+					 pc +=2;
+					 break;
+				case 0xB000:
+					 pc = (opcode & 0x0FFF) + registers[0];
+					 break;
+				case 0xC000:
+					 registers[(opcode & 0x0F00) >> 8] = rand() & (opcode & 0x00FF);
+					 pc +=2;
+					 break;
+				case 0xD000:
+					 vx = registers[(opcode & 0x0F00) >> 8];
+               		 vy = registers[(opcode & 0x00F0) >> 4];
+                     height = opcode & 0x000F;  
+               		 registers[0xF] &= 0;
+           
+                	for(y = 0; y < height; y++){
+                    	pixel = memory[I + y];
+                    	for(x = 0; x < 8; x++){
+                        if(pixel & (0x80 >> x)){
+                            if(gfx[x+vx+(y+vy)*64])
+                                registers[0xF] = 1;
+                            gfx[x+vx+(y+vy)*64] ^= 1;
+                        }
+                    }
+                }
+                pc += 2;
+            break;
 				//now for some cancer
 				
 
