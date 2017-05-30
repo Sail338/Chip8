@@ -20,7 +20,7 @@ unsigned char sound_timer;
 unsigned short stack[16];
 unsigned short sp;
 unsigned short I;
-
+Uint8 *keys;
 //emulate4s a keypad
 unsigned char key[16] ={
    SDLK_0,
@@ -246,6 +246,27 @@ void emulate(){
                 }
                 pc += 2;
             break;
+			case 0xE000:
+                switch(opcode & 0x000F){
+                    case 0x000E: // EX9E: Skips the next instruction if the key stored in VX is pressed
+                        keys = SDL_GetKeyState(NULL);
+                        if(keys[key[registers[(opcode & 0x0F00) >> 8]]])
+                            pc += 4;
+                        else
+                            pc += 2;
+                    break;
+                             
+                    case 0x0001: // EXA1: Skips the next instruction if the key stored in VX isn't pressed
+                        keys = SDL_GetKeyState(NULL);
+                        if(!keys[key[registers[(opcode & 0x0F00) >> 8]]])
+                            pc += 4;
+                        else
+                            pc += 2;
+                    break;
+                         
+                }
+            break;
+					
 				//now for some cancer
 				
 
